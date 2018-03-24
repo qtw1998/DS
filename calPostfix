@@ -1,0 +1,51 @@
+#include <iostream>
+#include <math.h>
+#define MIN 1.0E-7
+#define maxSize 10
+using namespace std;
+int calSub(float operand1,float operand2,char op,float &result)
+{
+    if(op == '+')    result = operand1 + operand2;
+    if(op == '-')    result = operand1 - operand2;
+    if(op == '*')    result = operand1 * operand2;
+    if(op == '/')
+    {
+        if(fabs(operand2) < MIN)
+            return 0;
+        else
+            result = operand1 / operand2;
+    }
+    return 1;
+}
+
+float calPostFix(char exp[])
+{
+    float s[maxSize];int top = -1;
+    for(int i = 0;exp[i] != '\0';++i)
+    {
+        if('0' <= exp[i] && exp[i] <= '9')//压栈
+            s[++top] = exp[i] - '0';
+        else//出栈元素进行求值，并放入到栈顶中继续循环
+        {
+            float operand2 = s[top--];
+            float operand1 = s[top--];//还是要注意出栈顺序
+            char op = exp[i];
+            float result = 0;
+            int flag = calSub(operand1,operand2,op,result);
+            if(flag == 0)
+            {
+                cout<<"ERROR"<<endl;
+                break;
+            }
+            s[++top] = result;
+        }
+    }
+    return s[top];
+}
+
+int main()
+{
+    char exp[] = "467*+4+6+42/-";
+    cout<<calPostFix(exp)<<endl;
+    return 0;
+}
