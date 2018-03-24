@@ -1,0 +1,89 @@
+#include <stdlib.h>
+//用栈求中缀表达式的值
+//实现得出符号优先级的模块(乘除优先级高于加减)
+int getPriority(char op)
+{
+	if(op == '+' || op == '-')  
+		return 0;
+	else 
+		return 1;
+}
+
+//两个数出栈求值（子表达式求值）
+int calSub(float operand1,char op,float operand2,float &x)
+{
+	if(op == '+')	x = operand1 + operand2;
+	if(op == '-')	x = operand1 + operand2;
+	if(op == '*')	x = operand1 * operand2;
+	if(op == '/')
+	{
+		if(fabs(operand2) < MIN)
+			return 0;
+		else
+			x = operand1 / operand2;
+	}
+	return 1;
+}
+
+//出栈配符号,并且将result放入s1栈顶
+int calStackTopTwo(float s1[],char s2[],int &top1,int &top2)
+{
+	float operand2 = s1[top1--];
+	float operand1 = s1[top1--];//很关键，注意出栈的次序
+	char op = s2[top2--];
+	int result = 0;
+	int flag = calSub(operand1,op,operand2,result);
+	if(flag == 0)
+		std::cout<<"ERROR"<<std::endl;//puts("ERROR");
+	s1[++top1] = result;//再把算出来的值放进去
+	return 1;
+}
+//实现通过栈来求值的功能（扫描到的符号：栈空、栈顶元素为左括号、优先级高于栈顶优先级的时候 --> 直接入栈）
+float calInfix(char exp[])
+{
+	float s1[maxSize]; int top1 = -1;
+	char s2[maxSize]; int top2 = -1;
+	int i = 0;
+	while(exp[i] != '\0')
+	{
+		if('0' <= exp[i] && exp[i] <= '9')//遇到数字-->放到s1栈当中
+		{
+			s1[++top1] = exp[i] - '0';
+			++i;
+		}
+		else if(exp[i] == '(')//遇到左括号-->直接放进s2栈
+		{
+			s2[++top2] = exp[i];
+			++i;
+		}
+		else if(exp[i] == '+' || exp[i] == '-' || exp[i] == '*' || exp[i] == '/')//遇到符号-->进行下面的逻辑步骤
+		{
+			if(top2 == -1 || s2[top2] == '(' || getPriority(exp[i]) > getPriority(s2[top2]))//讨论的是直接入栈的情况-->符号栈为空或者-->符号栈栈顶元素为'('-->优先级高于现栈顶符号
+				s2[++top2] = exp[i];++i;
+			else//非入栈的情况就是拿出栈中的数据来运算，并且将result放入栈中
+			{
+				int flag = calStackTopTwo(s1,s2,top1,top2);
+				if(flag == 0)
+					return 0;
+			}
+		}
+		else if(exp[i] == ')')
+		{
+			while(s2[top2] != '(')
+			{
+				int flag = calStackTopTwo(s1,s2,top1,top2);
+				if(flag == 0)
+					return 0;
+			}
+			--top2;
+			++i;
+		}
+	}
+	while(top2 != -1)
+	{
+		int flag = calStackTopTwo(si,s2,top1,top2);
+		if(flag == 0)
+			return 0;
+	}
+	return s1[top1];
+}
