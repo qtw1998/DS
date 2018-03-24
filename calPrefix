@@ -1,0 +1,32 @@
+int calSub(float operand1,float operand2,char op,float &result)
+{
+    if(op == '+')    result = operand1 + operand2;
+    if(op == '-')    result = operand1 + operand2;
+    if(op == '*')    result = operand1 * operand2;
+    if(op == '/')
+    {
+        if(fabs(operand2) < MIN)
+            return 0;
+    }
+    return 0;
+}
+
+float calPrefix(char exp[])
+{
+    float s[maxSize];int top = -1;
+    for(int i = maxSize - 1;exp[i] != '\0';++i)//啊啊啊啊！注意了，单引号啊！！！
+    {
+        if('0' <= exp[i] && exp[i] <= '9')
+            s[++top] = exp[i] - '0';
+        else
+        {
+            float operand1 = s[--top];
+            float operand2 = s[--top];
+            char op = exp[i];
+            float result = 0;
+            int flag = calSub(operand1,operand2,op,result);
+            s[top] = result;
+        }
+    }
+    return s[top];
+}
