@@ -1,0 +1,144 @@
+#include <iostream>
+#include <math.h>
+#define MIN 1.0E-7
+#define maxSize 10
+using namespace std;
+//int calSub(float operand1,float operand2,char op,float &result)
+//{
+//    if(op == '+')    result = operand1 + operand2;
+//    if(op == '-')    result = operand1 - operand2;
+//    if(op == '*')    result = operand1 * operand2;
+//    if(op == '/')
+//    {
+//        if(fabs(operand2) < MIN)
+//            return 0;
+//        else
+//            result = operand1 / operand2;
+//    }
+//    return 1;
+//}
+//
+//float calPostFix(char exp[])
+//{
+//    float s[maxSize];int top = -1;
+//    for(int i = 0;exp[i] != '\0';++i)
+//    {
+//        if('0' <= exp[i] && exp[i] <= '9')//压栈
+//            s[++top] = exp[i] - '0';
+//        else//出栈元素进行求值，并放入到栈顶中继续循环
+//        {
+//            float operand2 = s[top--];
+//            float operand1 = s[top--];//还是要注意出栈顺序
+//            char op = exp[i];
+//            float result = 0;
+//            int flag = calSub(operand1,operand2,op,result);
+//            if(flag == 0)
+//            {
+//                cout<<"ERROR"<<endl;
+//                break;
+//            }
+//            s[++top] = result;
+//        }
+//    }
+//    return s[top];
+//}
+//
+//int main()
+//{
+//    char exp[] = "467*+4+6+42/-";
+//    cout<<calPostFix(exp)<<endl;
+//    return 0;
+//}
+//int calSub(float operand1,float operand2,char op,float &result)
+//{
+//    if(op == '+')    result = operand1 + operand2;
+//    if(op == '-')    result = operand1 + operand2;
+//    if(op == '*')    result = operand1 * operand2;
+//    if(op == '/')
+//    {
+//        if(fabs(operand2) < MIN)
+//            return 0;
+//    }
+//    return 0;
+//}
+//
+//float calPrefix(char exp[])
+//{
+//    float s[maxSize];int top = -1;
+//    for(int i = maxSize - 1;exp[i] != '\0';++i)//啊啊啊啊！注意了，单引号啊！！！
+//    {
+//        if('0' <= exp[i] && exp[i] <= '9')
+//            s[++top] = exp[i] - '0';
+//        else
+//        {
+//            float operand1 = s[--top];
+//            float operand2 = s[--top];
+//            char op = exp[i];
+//            float result = 0;
+//            int flag = calSub(operand1,operand2,op,result);
+//            s[top] = result;
+//        }
+//    }
+//    return s[top];
+//}
+int getPriority(char op)
+{
+    if(op == '+' || op == '-')
+        return 0;
+    else
+        return 1;
+}
+
+void infixToPostfix(char infix[],char s2[])
+{
+    char s1[maxSize];
+    int top1 = -1;
+    int top2 = -1;
+    int i = 0;
+    while(infix[i] != '\0')//
+    {
+        if('0' <= infix[i] && infix[i] <= '9')//
+        {
+            s2[++top2] = infix[i];
+            ++i;
+        }
+        else if(infix[i] == '(')
+        {
+            s1[++top1] = infix[i];
+            ++i;
+        }
+        else if(infix[i] == '+' || infix[i] == '-' || infix[i] == '*' || infix[i] == '/')
+        {
+            if(top1 == -1 || s1[top1] == '(' || getPriority(infix[i]) > getPriority(s1[top1]))
+            {
+                s1[++top1] = infix[i];
+                ++i;
+            }
+            else
+                s2[++top2] = s1[top1--];
+        }
+        else if(infix[i] == ')')
+        {
+            while(s1[top1] != '(')
+                s2[++top2] = s1[top1--];
+            --top1;
+            ++i;
+        }
+    }
+    while(top1 != -1)
+    {
+        s2[++top2] = s1[top1--];
+    }
+}
+
+int main()
+{
+    char infix[] = "1+2*(3+5)+6";
+    char s2[12] = "\0";
+    infixToPostfix(infix,s2);
+    for(int i = 0;i < 12;++i)
+    {
+        cout<<s2[i];
+    }
+    return 0;
+}
