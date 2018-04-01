@@ -1,5 +1,5 @@
 //***************************************************************
-//           二叉树的递归遍历BT（二元树Binary tree）的遍历（包括递归和非递归）
+//           二叉树BT（二元树Binary tree）的遍历（包括递归和非递归）
 //****************************************************************
 
 typedef struct BTNode
@@ -94,6 +94,36 @@ void inorderNoncursion(BTNode *p)
 				p = Stack[top--];//p为上边的无左子树的node，出栈
 				visit(p);//出栈并且访问
 				p = p->rchild;//访问右子树，如果有的话进入到上边的while循环一路找左子树，如果没有的话，进入现在的循环体，先出栈顶，然后寻找右子树
+			}
+		}
+	}
+}
+//二叉树的层次遍历--> 用队列来实现
+void level(BTNode *root)
+{
+	if(p != NULL)
+	{
+		int front,rear;
+		BTNode *que[MAXSIZE];
+		front = rear;
+		BTNode *p = NULL;
+
+		rear = (rear + 1) % MAXSIZE;
+		que[rear] = root;
+		while(front != rear)//有孩子就入队，没有孩子就出队，出队即访问，左右孩子
+		{
+			front = (front + 1) % MAXSIZE;
+			p = que[front];
+			visit(p);
+			if(p->lchild != NULL)
+			{
+				rear =  (rear + 1) % MAXSIZE;
+				que[rear] = p->lchild;
+			}
+			if(p->rchild != NULL)
+			{
+				rear =  (rear + 1) % MAXSIZE;
+				que[rear] = p->rchild;
 			}
 		}
 	}
